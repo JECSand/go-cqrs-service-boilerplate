@@ -8,11 +8,11 @@ const (
 	INTEGRATION
 )
 
-// RoleClass enumerates the potential values for User.Role
-type RoleClass int
+// Role enumerates the potential values for User.Role
+type Role int
 
 const (
-	MEMBER RoleClass = iota
+	MEMBER Role = iota
 	ADMIN
 	ROOT
 )

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package kafkaMessages;
+
+option go_package = "./;kafkaMessages";
+
+message User {
+  string ID = 1;
+  string Username = 2;
+  string Email = 3;
+  string Password = 4;
+  bool   root = 5;
+  bool   active = 6;
+  google.protobuf.Timestamp CreatedAt = 7;
+  google.protobuf.Timestamp UpdatedAt = 8;
+}
+
+message UserCreate {
+  string Email = 1;
+  string Username = 2;
+  string Password = 3;
+}
+
+message UserCreated {
+  User User = 1;
+}
+
+message UserUpdate {
+  string ID = 1;
+  string Email = 2;
+  string Username = 3;
+}
+
+message UserUpdated {
+  User User = 1;
+}
+
+message PasswordUpdate {
+  string ID = 1;
+  string CurrentPassword = 2;
+  string NewPassword = 3;
+}
+
+message PasswordUpdated {
+  int64 Status = 1;
+}

@@ -11,12 +11,12 @@ import (
 
 // Config settings for auth
 type Config struct {
-	UserDuration        int `mapstructure:"sessionDuration"`     // 1
+	SessionDuration     int `mapstructure:"sessionDuration"`     // 1
 	IntegrationDuration int `mapstructure:"integrationDuration"` // 4380
 }
 
 func NewAuthConfig(uDur int, iDur int) *Config {
-	return &Config{UserDuration: uDur, IntegrationDuration: iDur}
+	return &Config{SessionDuration: uDur, IntegrationDuration: iDur}
 }
 
 type Authenticator interface {
@@ -27,11 +27,11 @@ type Authenticator interface {
 type authenticator struct {
 	log         logging.Logger
 	blacklist   BlacklistService
-	accessRules map[string]enums.RoleClass
+	accessRules map[string]enums.Role
 }
 
 // NewAuthenticator constructs a new authenticator
-func NewAuthenticator(log logging.Logger, aRules map[string]enums.RoleClass) *authenticator {
+func NewAuthenticator(log logging.Logger, aRules map[string]enums.Role) *authenticator {
 	return &authenticator{
 		log:         log,
 		accessRules: aRules,
