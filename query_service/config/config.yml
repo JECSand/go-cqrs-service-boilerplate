@@ -1,0 +1,67 @@
+serviceName: query_service
+grpc:
+  port: :5003
+  development: true
+probes:
+  readinessPath: /ready
+  livenessPath: /live
+  port: :3003
+  pprof: :6003
+  prometheusPath: /metrics
+  prometheusPort: :8003
+  checkIntervalSeconds: 10
+logger:
+  level: debug
+  devMode: false
+  encoder: json
+postgres:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  dbName: users
+  sslMode: false
+kafka:
+  brokers: [ "localhost:9092" ]
+  groupID: command_microservice_consumer
+  initTopics: true
+kafkaTopics:
+  userCreate:
+    topicName: user_create
+    partitions: 10
+    replicationFactor: 1
+  userUpdate:
+    topicName: user_update
+    partitions: 10
+    replicationFactor: 1
+  userCreated:
+    topicName: user_created
+    partitions: 10
+    replicationFactor: 1
+  userUpdated:
+    topicName: user_updated
+    partitions: 10
+    replicationFactor: 1
+  userDeleted:
+    topicName: user_deleted
+    partitions: 10
+    replicationFactor: 1
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  poolSize: 300
+mongo:
+  uri: "mongodb://localhost:27017"
+  user: admin
+  password: admin
+  db: users
+mongoCollections:
+  users: users
+serviceSettings:
+  redisUserPrefixKey: "query:user"
+jaeger:
+  enable: true
+  serviceName: query_service
+  hostPort: "localhost:6831"
+  logSpans: false

@@ -2,11 +2,12 @@ package v1
 
 import (
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/config"
+	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/commands"
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/metrics"
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/middleware"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/constants"
-	httpErrors "github.com/JECSand/go-cqrs-service-boilerplate/pkg/http_errors"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/logging"
+	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/routing"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/tracing"
 	"github.com/go-playground/validator"
 	"github.com/gofrs/uuid"
@@ -67,7 +68,7 @@ func (h *usersHandlers) CreateProduct() echo.HandlerFunc {
 		if err := c.Bind(createDto); err != nil {
 			h.log.WarnMsg("Bind", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 		createDto.ProductID = uuid.NewV4()
 		if err := h.v.StructCtx(ctx, createDto); err != nil {
@@ -107,7 +108,7 @@ func (h *usersHandlers) GetProductByID() echo.HandlerFunc {
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		query := queries.NewGetProductByIdQuery(productUUID)
@@ -115,7 +116,7 @@ func (h *usersHandlers) GetProductByID() echo.HandlerFunc {
 		if err != nil {
 			h.log.WarnMsg("GetProductById", err)
 			h.metrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		h.metrics.SuccessHttpRequests.Inc()
@@ -148,7 +149,7 @@ func (h *usersHandlers) SearchProduct() echo.HandlerFunc {
 		if err != nil {
 			h.log.WarnMsg("SearchProduct", err)
 			h.metrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		h.metrics.SuccessHttpRequests.Inc()
@@ -168,34 +169,30 @@ func (h *usersHandlers) SearchProduct() echo.HandlerFunc {
 func (h *usersHandlers) UpdateProduct() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		h.metrics.UpdateProductHttpRequests.Inc()
-
 		ctx, span := tracing.StartHttpServerTracerSpan(c, "productsHandlers.UpdateProduct")
 		defer span.Finish()
-
 		productUUID, err := uuid.FromString(c.Param(constants.ID))
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
-
 		updateDto := &dto.UpdateProductDto{ProductID: productUUID}
 		if err := c.Bind(updateDto); err != nil {
 			h.log.WarnMsg("Bind", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
-
 		if err := h.v.StructCtx(ctx, updateDto); err != nil {
 			h.log.WarnMsg("validate", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.ps.Commands.UpdateProduct.Handle(ctx, commands.NewUpdateProductCommand(updateDto)); err != nil {
 			h.log.WarnMsg("UpdateProduct", err)
 			h.metrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		h.metrics.SuccessHttpRequests.Inc()
@@ -223,13 +220,13 @@ func (h *usersHandlers) DeleteProduct() echo.HandlerFunc {
 		if err != nil {
 			h.log.WarnMsg("uuid.FromString", err)
 			h.traceErr(span, err)
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		if err := h.ps.Commands.DeleteProduct.Handle(ctx, commands.NewDeleteProductCommand(productUUID)); err != nil {
 			h.log.WarnMsg("DeleteProduct", err)
 			h.metrics.ErrorHttpRequests.Inc()
-			return httpErrors.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
+			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
 
 		h.metrics.SuccessHttpRequests.Inc()
