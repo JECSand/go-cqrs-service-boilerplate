@@ -1,3 +1,42 @@
+.PHONY:
+
+run_gateway_service:
+	go run api_gateway_service/cmd/main.go -config=./api_gateway_service/config/config.yaml
+
+run_command_service:
+	go run command_service/cmd/main.go -config=./command_service/config/config.yaml
+
+run_query_service:
+	go run query_service/cmd/main.go -config=./query_service/config/config.yaml
+
+# ==============================================================================
+# Docker
+
+docker_dev:
+	@echo Starting local docker dev compose
+	docker-compose -f docker-compose.yaml up --build
+
+local:
+	@echo Starting local docker compose
+	docker-compose -f docker-compose.local.yaml up -d --build
+
+
+# ==============================================================================
+# Docker support
+
+FILES := $(shell docker ps -aq)
+
+down-local:
+	docker stop $(FILES)
+	docker rm $(FILES)
+
+clean:
+	docker system prune -f
+
+logs-local:
+	docker logs -f $(FILES)
+
+# ==============================================================================
 # Modules support
 
 tidy:
@@ -65,6 +104,14 @@ swagger:
 proto_kafka:
 	@echo Generating kafka proto
 	cd protos/kafka && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. kafka.proto
+
+proto_command:
+	@echo Generating user command service proto
+	cd command_service/proto/user_command && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. user_command.proto
+
+proto_command_message:
+	@echo Generating user command messages service proto
+	cd command_service/proto/user_command && protoc --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=. user_command_messages.proto
 
 proto_query:
 	@echo Generating user query service proto
