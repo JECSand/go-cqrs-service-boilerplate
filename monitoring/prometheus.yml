@@ -11,14 +11,14 @@ scrape_configs:
     static_configs:
       - targets: [ 'host.docker.internal:9101' ]
 
-  - job_name: 'api_gateway_microservice'
+  - job_name: 'api_gateway_service'
     static_configs:
       - targets: [ 'host.docker.internal:8001' ]
 
-  - job_name: 'writer_microservice'
+  - job_name: 'command_service'
     static_configs:
       - targets: [ 'host.docker.internal:8002' ]
 
-  - job_name: 'reader_microservice'
+  - job_name: 'query_service'
     static_configs:
       - targets: [ 'host.docker.internal:8003' ]

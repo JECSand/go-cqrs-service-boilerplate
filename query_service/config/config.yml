@@ -23,7 +23,7 @@ postgres:
   sslMode: false
 kafka:
   brokers: [ "localhost:9092" ]
-  groupID: command_microservice_consumer
+  groupID: command_service_consumer
   initTopics: true
 kafkaTopics:
   userCreate:

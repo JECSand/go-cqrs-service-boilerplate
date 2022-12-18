@@ -6,10 +6,8 @@ import (
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/constants"
 	kafkaClient "github.com/JECSand/go-cqrs-service-boilerplate/pkg/kafka"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/logging"
-	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/mongodb"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/postgres"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/probes"
-	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/redis"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/tracing"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -19,22 +17,18 @@ import (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "config", "", "Query service config path")
+	flag.StringVar(&configPath, "config", "", "Command service config path")
 }
 
 type Config struct {
-	ServiceName      string              `mapstructure:"serviceName"`
-	Logger           *logging.Config     `mapstructure:"logger"`
-	KafkaTopics      KafkaTopics         `mapstructure:"kafkaTopics"`
-	GRPC             GRPC                `mapstructure:"grpc"`
-	Postgresql       *postgres.Config    `mapstructure:"postgres"`
-	Kafka            *kafkaClient.Config `mapstructure:"kafka"`
-	Mongo            *mongodb.Config     `mapstructure:"mongo"`
-	Redis            *redis.Config       `mapstructure:"redis"`
-	MongoCollections MongoCollections    `mapstructure:"mongoCollections"`
-	Probes           probes.Config       `mapstructure:"probes"`
-	ServiceSettings  ServiceSettings     `mapstructure:"serviceSettings"`
-	Jaeger           *tracing.Config     `mapstructure:"jaeger"`
+	ServiceName string              `mapstructure:"serviceName"`
+	Logger      *logging.Config     `mapstructure:"logger"`
+	KafkaTopics KafkaTopics         `mapstructure:"kafkaTopics"`
+	GRPC        GRPC                `mapstructure:"grpc"`
+	Postgresql  *postgres.Config    `mapstructure:"postgres"`
+	Kafka       *kafkaClient.Config `mapstructure:"kafka"`
+	Probes      probes.Config       `mapstructure:"probes"`
+	Jaeger      *tracing.Config     `mapstructure:"jaeger"`
 }
 
 type GRPC struct {
@@ -42,18 +36,13 @@ type GRPC struct {
 	Development bool   `mapstructure:"development"`
 }
 
-type MongoCollections struct {
-	Users string `mapstructure:"users"`
-}
-
 type KafkaTopics struct {
+	UserCreate  kafkaClient.TopicConfig `mapstructure:"userCreate"`
 	UserCreated kafkaClient.TopicConfig `mapstructure:"userCreated"`
+	UserUpdate  kafkaClient.TopicConfig `mapstructure:"userUpdate"`
 	UserUpdated kafkaClient.TopicConfig `mapstructure:"userUpdated"`
+	UserDelete  kafkaClient.TopicConfig `mapstructure:"userDelete"`
 	UserDeleted kafkaClient.TopicConfig `mapstructure:"userDeleted"`
-}
-
-type ServiceSettings struct {
-	RedisUserPrefixKey string `mapstructure:"redisUserPrefixKey"`
 }
 
 func InitConfig() (*Config, error) {
@@ -66,7 +55,7 @@ func InitConfig() (*Config, error) {
 			if err != nil {
 				return nil, errors.Wrap(err, "os.Getwd")
 			}
-			configPath = fmt.Sprintf("%s/query_service/config/config.yaml", getwd)
+			configPath = fmt.Sprintf("%s/command_service/config/config.yaml", getwd)
 		}
 	}
 	cfg := &Config{}
@@ -90,30 +79,13 @@ func InitConfig() (*Config, error) {
 	if postgresPort != "" {
 		cfg.Postgresql.Port = postgresPort
 	}
-	mongoURI := os.Getenv(constants.MongoDbURI)
-	if mongoURI != "" {
-		//cfg.Mongo.URI = "mongodb://host.docker.internal:27017"
-		cfg.Mongo.URI = mongoURI
-	}
-	redisAddr := os.Getenv(constants.RedisAddr)
-	if redisAddr != "" {
-		cfg.Redis.Addr = redisAddr
-	}
-	//jaegerAddr := os.Getenv("JAEGER_HOST")
-	//if jaegerAddr != "" {
-	//	cfg.Jaeger.HostPort = jaegerAddr
-	//}
-	//kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	//if kafkaBrokers != "" {
-	//	cfg.Kafka.Brokers = []string{"host.docker.internal:9092"}
-	//}
-	kafkaBrokers := os.Getenv(constants.KafkaBrokers)
-	if kafkaBrokers != "" {
-		cfg.Kafka.Brokers = []string{kafkaBrokers}
-	}
 	jaegerAddr := os.Getenv(constants.JaegerHostPort)
 	if jaegerAddr != "" {
 		cfg.Jaeger.HostPort = jaegerAddr
+	}
+	kafkaBrokers := os.Getenv(constants.KafkaBrokers)
+	if kafkaBrokers != "" {
+		cfg.Kafka.Brokers = []string{kafkaBrokers}
 	}
 	return cfg, nil
 }

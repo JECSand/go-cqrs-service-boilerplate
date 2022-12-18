@@ -44,7 +44,7 @@ func (c *createUserHandler) Handle(ctx context.Context, command *CreateUserComma
 		return err
 	}
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
-		Topic:   c.cfg.KafkaTopics.ProductCreate.TopicName,
+		Topic:   c.cfg.KafkaTopics.UserCreate.TopicName,
 		Value:   dtoBytes,
 		Time:    time.Now().UTC(),
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
@@ -83,7 +83,7 @@ func (c *updateUserCmdHandler) Handle(ctx context.Context, command *UpdateUserCo
 		return err
 	}
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
-		Topic:   c.cfg.KafkaTopics.ProductUpdate.TopicName,
+		Topic:   c.cfg.KafkaTopics.UserUpdate.TopicName,
 		Value:   dtoBytes,
 		Time:    time.Now().UTC(),
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),
@@ -114,7 +114,7 @@ func (c *deleteUserHandler) Handle(ctx context.Context, command *DeleteUserComma
 		return err
 	}
 	return c.kafkaProducer.PublishMessage(ctx, kafka.Message{
-		Topic:   c.cfg.KafkaTopics.ProductDelete.TopicName,
+		Topic:   c.cfg.KafkaTopics.UserDelete.TopicName,
 		Value:   dtoBytes,
 		Time:    time.Now().UTC(),
 		Headers: tracing.GetKafkaTracingHeadersFromSpanCtx(span.Context()),

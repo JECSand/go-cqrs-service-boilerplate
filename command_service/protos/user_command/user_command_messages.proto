@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-package kafkaMessages;
+package commandService;
 
-option go_package = "./;kafkaMessages";
+option go_package = "./;commandService";
 
 message User {
   string ID = 1;
@@ -17,41 +17,29 @@ message User {
   google.protobuf.Timestamp UpdatedAt = 8;
 }
 
-message UserCreate {
+message CreateUserReq {
   string ID = 1;
   string Email = 2;
   string Username = 3;
   string Password = 4;
 }
 
-message UserCreated {
-  User User = 1;
+message CreateUserRes {
+  string ID = 1;
 }
 
-message UserUpdate {
+message UpdateUserReq {
   string ID = 1;
   string Email = 2;
   string Username = 3;
 }
 
-message UserUpdated {
+message UpdateUserRes {}
+
+message GetUserByIdReq {
+  string ID = 1;
+}
+
+message GetUserByIdRes {
   User User = 1;
-}
-
-message UserDelete {
-  string ID = 1;
-}
-
-message UserDeleted {
-  string ID = 1;
-}
-
-message PasswordUpdate {
-  string ID = 1;
-  string CurrentPassword = 2;
-  string NewPassword = 3;
-}
-
-message PasswordUpdated {
-  int64 Status = 1;
 }

@@ -16,10 +16,10 @@ import (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "config", "", "API Gateway microservice config path")
+	flag.StringVar(&configPath, "config", "", "API Gateway service config path")
 }
 
-// Config structures the configuratiion for the api gateway service
+// Config structures the configuration for the api gateway service
 type Config struct {
 	ServiceName string          `mapstructure:"serviceName"`
 	Logger      *logging.Config `mapstructure:"logging"`
@@ -43,13 +43,13 @@ type Http struct {
 }
 
 type Grpc struct {
-	ReaderServicePort string `mapstructure:"readerServicePort"`
+	QueryServicePort string `mapstructure:"queryServicePort"`
 }
 
 type KafkaTopics struct {
-	ProductCreate kafka.TopicConfig `mapstructure:"productCreate"`
-	ProductUpdate kafka.TopicConfig `mapstructure:"productUpdate"`
-	ProductDelete kafka.TopicConfig `mapstructure:"productDelete"`
+	UserCreate kafka.TopicConfig `mapstructure:"userCreate"`
+	UserUpdate kafka.TopicConfig `mapstructure:"userUpdate"`
+	UserDelete kafka.TopicConfig `mapstructure:"userDelete"`
 }
 
 func InitConfig() (*Config, error) {
@@ -91,10 +91,9 @@ func InitConfig() (*Config, error) {
 	if jaegerAddr != "" {
 		cfg.Jaeger.HostPort = jaegerAddr
 	}
-	readerServicePort := os.Getenv(constants.ReaderServicePort)
-	if readerServicePort != "" {
-		cfg.Grpc.ReaderServicePort = readerServicePort
+	queryServicePort := os.Getenv(constants.QueryServicePort)
+	if queryServicePort != "" {
+		cfg.Grpc.QueryServicePort = queryServicePort
 	}
-
 	return cfg, nil
 }

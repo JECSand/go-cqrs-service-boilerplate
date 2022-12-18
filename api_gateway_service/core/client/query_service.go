@@ -25,7 +25,7 @@ func NewQueryServiceClient(ctx context.Context, cfg *config.Config, im intercept
 	}
 	queryClient, err := grpc.DialContext(
 		ctx,
-		cfg.Grpc.ReaderServicePort,
+		cfg.Grpc.QueryServicePort,
 		grpc.WithUnaryInterceptor(im.ClientRequestLoggerInterceptor()),
 		grpc.WithInsecure(),
 		grpc.WithUnaryInterceptor(grpc_retry.UnaryClientInterceptor(opts...)),
