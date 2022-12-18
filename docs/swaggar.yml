@@ -1,0 +1,166 @@
+definitions:
+  dto.CreateUserResponseDTO:
+    properties:
+      id:
+        type: string
+    required:
+      - id
+    type: object
+  dto.UserResponse:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      username:
+        type: string
+      root:
+        type: boolean
+      active:
+        type: boolean
+      id:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  dto.UsersListResponse:
+    properties:
+      hasMore:
+        type: boolean
+      page:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/dto.UserResponse'
+        type: array
+      size:
+        type: integer
+      totalCount:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  dto.UpdateUserDTO:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      productId:
+        type: string
+    required:
+      - description
+      - name
+      - price
+      - id
+    type: object
+info:
+  contact:
+    name: Connor Sanders
+    url: github.com/JECSand/go-cqrs-service-boilerplate
+paths:
+  /users:
+    post:
+      consumes:
+        - application/json
+      description: Create new product item
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateUserResponseDTO'
+      summary: Create user
+      tags:
+        - Users
+  /users/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete existing user
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete user
+      tags:
+        - Users
+    get:
+      consumes:
+        - application/json
+      description: Get user by id
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+      summary: Get user
+      tags:
+        - Users
+    put:
+      consumes:
+        - application/json
+      description: Update existing user
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateUserDTO'
+      summary: Update user
+      tags:
+        - Users
+  /users/search:
+    get:
+      consumes:
+        - application/json
+      description: Get user by name with pagination
+      parameters:
+        - description: search text
+          in: query
+          name: search
+          type: string
+        - description: page number
+          in: query
+          name: page
+          type: string
+        - description: number of elements
+          in: query
+          name: size
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UsersListResponse'
+      summary: Search user
+      tags:
+        - User
+swagger: "2.0"

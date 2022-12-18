@@ -11,7 +11,10 @@ type UserQueries struct {
 }
 
 func NewUserQueries(getById GetUserByIdHandler, search SearchUserHandler) *UserQueries {
-	return &UserQueries{GetUserById: getById, SearchUser: search}
+	return &UserQueries{
+		GetUserById: getById,
+		SearchUser:  search,
+	}
 }
 
 type GetUserByIdQuery struct {

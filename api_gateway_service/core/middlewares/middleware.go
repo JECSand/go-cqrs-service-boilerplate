@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/config"

@@ -6,16 +6,16 @@ import (
 )
 
 type UserCommands struct {
-	CreateProduct CreateUserCmdHandler
-	UpdateProduct UpdateUserCmdHandler
-	DeleteProduct DeleteUserCmdHandler
+	CreateUser CreateUserCmdHandler
+	UpdateUser UpdateUserCmdHandler
+	DeleteUser DeleteUserCmdHandler
 }
 
-func NewProductCommands(create CreateUserCmdHandler, update UpdateUserCmdHandler, delete DeleteUserCmdHandler) *UserCommands {
+func NewUserCommands(create CreateUserCmdHandler, update UpdateUserCmdHandler, delete DeleteUserCmdHandler) *UserCommands {
 	return &UserCommands{
-		CreateProduct: create,
-		UpdateProduct: update,
-		DeleteProduct: delete,
+		CreateUser: create,
+		UpdateUser: update,
+		DeleteUser: delete,
 	}
 }
 
@@ -42,6 +42,6 @@ type DeleteUserCommand struct {
 	ID uuid.UUID `json:"id" validate:"required"`
 }
 
-func NewDeleteProductCommand(userID uuid.UUID) *DeleteUserCommand {
+func NewDeleteUserCommand(userID uuid.UUID) *DeleteUserCommand {
 	return &DeleteUserCommand{ID: userID}
 }

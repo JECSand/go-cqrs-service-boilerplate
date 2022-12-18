@@ -6,11 +6,14 @@ import (
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/client"
 	v1 "github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/controllers/http/v1"
 	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/metrics"
+	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/middlewares"
+	"github.com/JECSand/go-cqrs-service-boilerplate/api_gateway_service/core/services"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/authentication"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/interceptors"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/kafka"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/logging"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/tracing"
+	queryService "github.com/JECSand/go-cqrs-service-boilerplate/query_service/protos/user_query"
 	"github.com/go-playground/validator"
 	"github.com/heptiolabs/healthcheck"
 	"github.com/labstack/echo/v4"
@@ -42,10 +45,10 @@ type server struct {
 	auth authentication.Authenticator
 	cfg  *config.Config
 	v    *validator.Validate
-	mw   middleware.MiddlewareManager
+	mw   middlewares.MiddlewareManager
 	im   interceptors.InterceptorManager
 	echo *echo.Echo
-	ps   *service.ProductService
+	ps   *services.UserService
 	m    *metrics.ApiGatewayMetrics
 }
 
@@ -61,28 +64,27 @@ func NewServer(log logging.Logger, auth authentication.Authenticator, cfg *confi
 func (s *server) Run() error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	defer cancel()
-	s.mw = middleware.NewMiddlewareManager(s.log, s.cfg)
+	s.mw = middlewares.NewMiddlewareManager(s.log, s.cfg)
 	s.im = interceptors.NewInterceptorManager(s.log, s.auth)
 	s.m = metrics.NewApiGatewayMetrics(s.cfg)
-
-	queryService, err := client.NewQueryServiceClient(ctx, s.cfg, s.im)
+	queryServiceClient, err := client.NewQueryServiceClient(ctx, s.cfg, s.im)
 	if err != nil {
 		return err
 	}
-	defer readerServiceConn.Close() // nolint: errcheck
-	rsClient := readerService.NewReaderServiceClient(readerServiceConn)
+	defer queryServiceClient.Close() // nolint: errCheck
+	rsClient := queryService.NewQueryServiceClient(queryServiceClient)
 	kafkaProducer := kafka.NewProducer(s.log, s.cfg.Kafka.Brokers)
-	defer kafkaProducer.Close() // nolint: errcheck
-	s.ps = service.NewProductService(s.log, s.cfg, kafkaProducer, rsClient)
-	productHandlers := v1.NewProductsHandlers(s.echo.Group(s.cfg.Http.ProductsPath), s.log, s.mw, s.cfg, s.ps, s.v, s.m)
+	defer kafkaProducer.Close() // nolint: errCheck
+	s.ps = services.NewUserService(s.log, s.cfg, kafkaProducer, rsClient)
+	productHandlers := v1.NewUsersHandlers(s.echo.Group(s.cfg.Http.ProductsPath), s.log, s.mw, s.cfg, s.ps, s.v, s.m)
 	productHandlers.MapRoutes()
 	go func() {
-		if err := s.runHttpServer(); err != nil {
+		if err = s.runHttpServer(); err != nil {
 			s.log.Errorf(" s.runHttpServer: %v", err)
 			cancel()
 		}
 	}()
-	s.log.Infof("API Gateway is listening on PORT: %s", s.cfg.Http.Port)
+	s.log.Infof("API Gateway Service is listening on PORT: %s", s.cfg.Http.Port)
 	s.runMetrics(cancel)
 	s.runHealthCheck(ctx)
 	if s.cfg.Jaeger.Enable {
@@ -90,11 +92,11 @@ func (s *server) Run() error {
 		if err != nil {
 			return err
 		}
-		defer closer.Close() // nolint: errcheck
+		defer closer.Close() // nolint: errCheck
 		opentracing.SetGlobalTracer(tracer)
 	}
 	<-ctx.Done()
-	if err := s.echo.Server.Shutdown(ctx); err != nil {
+	if err = s.echo.Server.Shutdown(ctx); err != nil {
 		s.log.WarnMsg("echo.Server.Shutdown", err)
 	}
 	return nil
@@ -102,14 +104,12 @@ func (s *server) Run() error {
 
 func (s *server) runHealthCheck(ctx context.Context) {
 	health := healthcheck.NewHandler()
-
 	health.AddReadinessCheck(s.cfg.ServiceName, healthcheck.AsyncWithContext(ctx, func() error {
 		if s.cfg != nil {
 			return nil
 		}
 		return errors.New("Config not loaded")
 	}, time.Duration(s.cfg.Probes.CheckIntervalSeconds)*time.Second))
-
 	go func() {
 		s.log.Infof("API_Gateway Kubernetes probes listening on port: %s", s.cfg.Probes.Port)
 		if err := http.ListenAndServe(s.cfg.Probes.Port, health); err != nil {

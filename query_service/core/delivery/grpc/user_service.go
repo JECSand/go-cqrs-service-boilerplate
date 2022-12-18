@@ -55,7 +55,7 @@ func (s *grpcService) CreateUser(ctx context.Context, req *queryService.CreateUs
 	return &queryService.CreateUserRes{ID: req.GetID()}, nil
 }
 
-func (s *grpcService) UpdateProduct(ctx context.Context, req *queryService.UpdateUserReq) (*queryService.UpdateUserRes, error) {
+func (s *grpcService) UpdateUser(ctx context.Context, req *queryService.UpdateUserReq) (*queryService.UpdateUserRes, error) {
 	s.metrics.UpdateUserGrpcRequests.Inc()
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.UpdateUser")
 	defer span.Finish()
@@ -110,7 +110,7 @@ func (s *grpcService) SearchUser(ctx context.Context, req *queryService.SearchRe
 	return models.UserListToGrpc(productsList), nil
 }
 
-func (s *grpcService) DeleteUsersByID(ctx context.Context, req *queryService.DeleteUserByIdReq) (*queryService.DeleteUserByIdRes, error) {
+func (s *grpcService) DeleteUserByID(ctx context.Context, req *queryService.DeleteUserByIdReq) (*queryService.DeleteUserByIdRes, error) {
 	s.metrics.DeleteUserGrpcRequests.Inc()
 	ctx, span := tracing.StartGrpcServerTracerSpan(ctx, "grpcService.DeleteUserByID")
 	defer span.Finish()

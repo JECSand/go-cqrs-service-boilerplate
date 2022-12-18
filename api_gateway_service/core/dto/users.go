@@ -1,14 +1,16 @@
 package dto
 
 import (
+	queryService "github.com/JECSand/go-cqrs-service-boilerplate/query_service/protos/user_query"
 	"github.com/gofrs/uuid"
 	"time"
 )
 
 type CreateUserDTO struct {
-	Email    string `json:"email" validate:"required,gte=0,lte=255"`
-	Username string `json:"username" validate:"required,gte=0,lte=255"`
-	Password string `json:"password" validate:"required,gte=0,lte=5000"`
+	ID       uuid.UUID `json:"id"`
+	Email    string    `json:"email" validate:"required,gte=0,lte=255"`
+	Username string    `json:"username" validate:"required,gte=0,lte=255"`
+	Password string    `json:"password" validate:"required,gte=0,lte=5000"`
 }
 
 type CreateUserResponseDTO struct {
@@ -24,22 +26,24 @@ type UpdateUserDTO struct {
 
 // UserResponse ...
 type UserResponse struct {
-	ProductID   string    `json:"productId"`
-	Name        string    `json:"name,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Price       float64   `json:"price,omitempty"`
-	CreatedAt   time.Time `json:"createdAt,omitempty"`
-	UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+	ID        string    `json:"id"`
+	Email     string    `json:"email,omitempty"`
+	Username  string    `json:"username,omitempty"`
+	Root      bool      `json:"root,omitempty"`
+	Active    bool      `json:"active,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 }
 
-func UserResponseFromGrpc(product *readerService.Product) *UserResponse {
+func UserResponseFromGrpc(user *queryService.User) *UserResponse {
 	return &UserResponse{
-		ProductID:   product.GetProductID(),
-		Name:        product.GetName(),
-		Description: product.GetDescription(),
-		Price:       product.GetPrice(),
-		CreatedAt:   product.GetCreatedAt().AsTime(),
-		UpdatedAt:   product.GetUpdatedAt().AsTime(),
+		ID:        user.GetID(),
+		Email:     user.GetEmail(),
+		Username:  user.GetUsername(),
+		Root:      user.GetRoot(),
+		Active:    user.GetActive(),
+		CreatedAt: user.GetCreatedAt().AsTime(),
+		UpdatedAt: user.GetUpdatedAt().AsTime(),
 	}
 }
 
@@ -53,9 +57,9 @@ type UsersListResponse struct {
 	Users      []*UserResponse `json:"users" bson:"users"`
 }
 
-func UsersListResponseFromGrpc(listResponse *readerService.SearchRes) *UsersListResponse {
-	list := make([]*UserResponse, 0, len(listResponse.GetProducts()))
-	for _, product := range listResponse.GetProducts() {
+func UsersListResponseFromGrpc(listResponse *queryService.SearchRes) *UsersListResponse {
+	list := make([]*UserResponse, 0, len(listResponse.GetUsers()))
+	for _, product := range listResponse.GetUsers() {
 		list = append(list, UserResponseFromGrpc(product))
 	}
 	return &UsersListResponse{

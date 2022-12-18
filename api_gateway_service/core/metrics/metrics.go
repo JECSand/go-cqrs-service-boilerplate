@@ -8,13 +8,13 @@ import (
 )
 
 type ApiGatewayMetrics struct {
-	SuccessHttpRequests        prometheus.Counter
-	ErrorHttpRequests          prometheus.Counter
-	CreateProductHttpRequests  prometheus.Counter
-	UpdateProductHttpRequests  prometheus.Counter
-	DeleteProductHttpRequests  prometheus.Counter
-	GetProductByIdHttpRequests prometheus.Counter
-	SearchProductHttpRequests  prometheus.Counter
+	SuccessHttpRequests     prometheus.Counter
+	ErrorHttpRequests       prometheus.Counter
+	CreateUserHttpRequests  prometheus.Counter
+	UpdateUserHttpRequests  prometheus.Counter
+	DeleteUserHttpRequests  prometheus.Counter
+	GetUserByIdHttpRequests prometheus.Counter
+	SearchUserHttpRequests  prometheus.Counter
 }
 
 func NewApiGatewayMetrics(cfg *config.Config) *ApiGatewayMetrics {
@@ -34,6 +34,18 @@ func NewApiGatewayMetrics(cfg *config.Config) *ApiGatewayMetrics {
 		UpdateUserHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
 			Name: fmt.Sprintf("%s_update_user_http_requests_total", cfg.ServiceName),
 			Help: "The total number of update user http requests",
+		}),
+		DeleteUserHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
+			Name: fmt.Sprintf("%s_delete_product_http_requests_total", cfg.ServiceName),
+			Help: "The total number of delete user http requests",
+		}),
+		GetUserByIdHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
+			Name: fmt.Sprintf("%s_get_product_by_id_http_requests_total", cfg.ServiceName),
+			Help: "The total number of get user by id http requests",
+		}),
+		SearchUserHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
+			Name: fmt.Sprintf("%s_search_product_http_requests_total", cfg.ServiceName),
+			Help: "The total number of search product http requests",
 		}),
 	}
 }

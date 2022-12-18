@@ -1,0 +1,250 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "contact": {
+      "name": "Connor Sanders",
+      "url": "https://github.com/JECSand/go-cqrs-service-boilerplate"
+    },
+    "version": "",
+    "title": ""
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "description": "Create new user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create user",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/dto.CreateUserResponseDTO"
+            }
+          }
+        }
+      }
+    },
+    "/users/search": {
+      "get": {
+        "description": "Get user by name with pagination",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Search users",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "search text",
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "page number",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "number of elements",
+            "name": "size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/dto.UsersListResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Get user by id",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/dto.UserResponse"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update existing user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/dto.UpdateUserDTO"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete existing user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "dto.CreateUserResponseDTO": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "dto.UserResponse": {
+      "type": "object",
+      "properties": {
+        "createdAt": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "root": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      }
+    },
+    "dto.UsersListResponse": {
+      "type": "object",
+      "properties": {
+        "hasMore": {
+          "type": "boolean"
+        },
+        "page": {
+          "type": "integer"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dto.UserResponse"
+          }
+        },
+        "size": {
+          "type": "integer"
+        },
+        "totalCount": {
+          "type": "integer"
+        },
+        "totalPages": {
+          "type": "integer"
+        }
+      }
+    },
+    "dto.UpdateUserDTO": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
