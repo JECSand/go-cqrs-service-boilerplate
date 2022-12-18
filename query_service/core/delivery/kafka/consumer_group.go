@@ -139,7 +139,7 @@ func (s *queryMessageProcessor) processUserDeleted(ctx context.Context, r *kafka
 		s.commitErrMessage(ctx, r, m)
 		return
 	}
-	id, err := uuid.FromString(msg.GetUser().GetID())
+	id, err := uuid.FromString(msg.GetID())
 	if err != nil {
 		s.log.WarnMsg("uuid.FromString", err)
 		s.commitErrMessage(ctx, r, m)
