@@ -33,23 +33,23 @@ func NewQueryServiceMetrics(cfg *config.Config) *QueryServiceMetrics {
 			Help: "The total number of error grpc requests",
 		}),
 		CreateUserGrpcRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_create_product_grpc_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_create_user_grpc_requests_total", cfg.ServiceName),
 			Help: "The total number of create user grpc requests",
 		}),
 		UpdateUserGrpcRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_update_product_grpc_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_update_user_grpc_requests_total", cfg.ServiceName),
 			Help: "The total number of update user grpc requests",
 		}),
 		DeleteUserGrpcRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_delete_product_grpc_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_delete_user_grpc_requests_total", cfg.ServiceName),
 			Help: "The total number of delete user grpc requests",
 		}),
 		GetUserByIdGrpcRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_get_product_by_id_grpc_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_get_user_by_id_grpc_requests_total", cfg.ServiceName),
 			Help: "The total number of get user by id grpc requests",
 		}),
 		SearchUserGrpcRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_search_product_grpc_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_search_user_grpc_requests_total", cfg.ServiceName),
 			Help: "The total number of search user grpc requests",
 		}),
 		CreateUserKafkaMessages: promauto.NewCounter(prometheus.CounterOpts{

@@ -130,7 +130,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=products
+      - POSTGRES_DB=users
       - POSTGRES_HOST=5432
     command: -p 5432
     volumes:
@@ -192,7 +192,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGODB_DATABASE: products
+      MONGODB_DATABASE: users
     ports:
       - "27017:27017"
     volumes:

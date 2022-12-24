@@ -7,8 +7,8 @@ import (
 )
 
 type Repository interface {
-	CreateUser(ctx context.Context, product *entities.User) (*entities.User, error)
-	UpdateUser(ctx context.Context, product *entities.User) (*entities.User, error)
-	DeleteUserByID(ctx context.Context, uuid uuid.UUID) error
-	GetUserById(ctx context.Context, uuid uuid.UUID) (*entities.User, error)
+	CreateUser(ctx context.Context, user *entities.User) (*entities.User, error)
+	UpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
+	DeleteUserByID(ctx context.Context, id uuid.UUID) error
+	GetUserById(ctx context.Context, id uuid.UUID) (*entities.User, error)
 }

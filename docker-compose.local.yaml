@@ -39,7 +39,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=products
+      - POSTGRES_DB=users
       - POSTGRES_HOST=5432
     command: -p 5432
     volumes:
@@ -55,26 +55,27 @@ services:
     networks: [ "microservices" ]
 
   zoo1:
-    image: zookeeper:3.4.9
+    image: confluentinc/cp-zookeeper:7.3.0
     restart: always
     hostname: zoo1
     ports:
       - "2181:2181"
     environment:
-      ZOO_MY_ID: 1
-      ZOO_PORT: 2181
-      ZOO_SERVERS: server.1=zoo1:2888:3888
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: zoo1:2888:3888
     volumes:
       - ./zk-single-kafka-single/zoo1/data:/data
       - ./zk-single-kafka-single/zoo1/datalog:/datalog
     networks: [ "microservices" ]
 
   kafka1:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.3.0
     restart: always
     hostname: kafka1
     ports:
       - "9092:9092"
+      - "29092:29092"
       - "9999:9999"
     environment:
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
@@ -100,7 +101,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGODB_DATABASE: products
+      MONGODB_DATABASE: users
     ports:
       - "27017:27017"
     volumes:
@@ -110,7 +111,7 @@ services:
   jaeger:
     container_name: jaeger_container
     restart: always
-    image: jaegertracing/all-in-one:1.21
+    image: jaegertracing/all-in-one:latest
     environment:
       - COLLECTOR_ZIPKIN_HTTP_PORT=9411
     ports:

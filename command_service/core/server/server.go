@@ -243,11 +243,11 @@ func (s *server) Run() error {
 
 	userRepo := repositories.NewUserRepository(s.log, s.cfg, pgxConn)
 	s.ps = controllers.NewUserService(s.log, s.cfg, userRepo, kafkaProducer)
-	productMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
+	userMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
 
 	s.log.Info("Starting Writer Kafka consumers")
 	cg := kafkaClient.NewConsumerGroup(s.cfg.Kafka.Brokers, s.cfg.Kafka.GroupID, s.log)
-	go cg.ConsumeTopic(ctx, s.getConsumerGroupTopics(), kafkaConsumer.PoolSize, productMessageProcessor.ProcessMessages)
+	go cg.ConsumeTopic(ctx, s.getConsumerGroupTopics(), kafkaConsumer.PoolSize, userMessageProcessor.ProcessMessages)
 	closeGrpcServer, grpcServer, err := s.newCommandGrpcServer()
 	if err != nil {
 		return errors.Wrap(err, "NewScmGrpcServer")

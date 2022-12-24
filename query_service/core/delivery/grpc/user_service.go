@@ -101,13 +101,13 @@ func (s *grpcService) SearchUser(ctx context.Context, req *queryService.SearchRe
 	defer span.Finish()
 	pq := utilities.NewPaginationQuery(int(req.GetSize()), int(req.GetPage()))
 	query := queries.NewSearchUserQuery(req.GetSearch(), pq)
-	productsList, err := s.ps.Queries.SearchUser.Handle(ctx, query)
+	usersList, err := s.ps.Queries.SearchUser.Handle(ctx, query)
 	if err != nil {
 		s.log.WarnMsg("SearchUser.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
 	}
 	s.metrics.SuccessGrpcRequests.Inc()
-	return models.UserListToGrpc(productsList), nil
+	return models.UserListToGrpc(usersList), nil
 }
 
 func (s *grpcService) DeleteUserByID(ctx context.Context, req *queryService.DeleteUserByIdReq) (*queryService.DeleteUserByIdRes, error) {

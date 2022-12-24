@@ -36,16 +36,16 @@ func NewApiGatewayMetrics(cfg *config.Config) *ApiGatewayMetrics {
 			Help: "The total number of update user http requests",
 		}),
 		DeleteUserHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_delete_product_http_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_delete_user_http_requests_total", cfg.ServiceName),
 			Help: "The total number of delete user http requests",
 		}),
 		GetUserByIdHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_get_product_by_id_http_requests_total", cfg.ServiceName),
+			Name: fmt.Sprintf("%s_get_user_by_id_http_requests_total", cfg.ServiceName),
 			Help: "The total number of get user by id http requests",
 		}),
 		SearchUserHttpRequests: promauto.NewCounter(prometheus.CounterOpts{
-			Name: fmt.Sprintf("%s_search_product_http_requests_total", cfg.ServiceName),
-			Help: "The total number of search product http requests",
+			Name: fmt.Sprintf("%s_search_user_http_requests_total", cfg.ServiceName),
+			Help: "The total number of search user http requests",
 		}),
 	}
 }

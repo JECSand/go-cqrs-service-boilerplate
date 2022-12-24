@@ -59,8 +59,8 @@ type UsersListResponse struct {
 
 func UsersListResponseFromGrpc(listResponse *queryService.SearchRes) *UsersListResponse {
 	list := make([]*UserResponse, 0, len(listResponse.GetUsers()))
-	for _, product := range listResponse.GetUsers() {
-		list = append(list, UserResponseFromGrpc(product))
+	for _, user := range listResponse.GetUsers() {
+		list = append(list, UserResponseFromGrpc(user))
 	}
 	return &UsersListResponse{
 		TotalCount: listResponse.GetTotalCount(),

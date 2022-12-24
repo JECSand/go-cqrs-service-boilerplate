@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	redisProductPrefixKey = "reader:product"
+	redisUserPrefixKey = "reader:user"
 )
 
 type redisCache struct {
@@ -82,5 +82,5 @@ func (r *redisCache) getRedisUserPrefixKey() string {
 	if r.cfg.ServiceSettings.RedisUserPrefixKey != "" {
 		return r.cfg.ServiceSettings.RedisUserPrefixKey
 	}
-	return redisProductPrefixKey
+	return redisUserPrefixKey
 }

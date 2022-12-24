@@ -76,8 +76,8 @@ func (s *server) Run() error {
 	kafkaProducer := kafka.NewProducer(s.log, s.cfg.Kafka.Brokers)
 	defer kafkaProducer.Close() // nolint: errCheck
 	s.ps = services.NewUserService(s.log, s.cfg, kafkaProducer, rsClient)
-	productHandlers := v1.NewUsersHandlers(s.echo.Group(s.cfg.Http.ProductsPath), s.log, s.mw, s.cfg, s.ps, s.v, s.m)
-	productHandlers.MapRoutes()
+	userHandlers := v1.NewUsersHandlers(s.echo.Group(s.cfg.Http.UsersPath), s.log, s.mw, s.cfg, s.ps, s.v, s.m)
+	userHandlers.MapRoutes()
 	go func() {
 		if err = s.runHttpServer(); err != nil {
 			s.log.Errorf(" s.runHttpServer: %v", err)

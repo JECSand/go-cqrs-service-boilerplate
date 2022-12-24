@@ -5,7 +5,7 @@ http:
   port: :5001
   development: true
   basePath: /api/v1
-  productsPath: /api/v1/products
+  usersPath: /api/v1/users
   debugHeaders: false
   httpClientDebug: false
   debugErrorsResponse: true

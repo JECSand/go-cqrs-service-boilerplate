@@ -6,7 +6,7 @@ import (
 )
 
 type Cache interface {
-	PutUser(ctx context.Context, key string, product *models.User)
+	PutUser(ctx context.Context, key string, user *models.User)
 	GetUser(ctx context.Context, key string) (*models.User, error)
 	DeleteUser(ctx context.Context, key string)
 	DeleteAllUsers(ctx context.Context)

@@ -18,7 +18,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }
 
-// UsersList products list response with pagination
+// UsersList response with pagination
 type UsersList struct {
 	TotalCount int64   `json:"totalCount" bson:"totalCount"`
 	TotalPages int64   `json:"totalPages" bson:"totalPages"`

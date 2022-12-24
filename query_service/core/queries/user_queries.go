@@ -34,15 +34,15 @@ func NewGetUserByIdHandler(log logging.Logger, cfg *config.Config, mongoDB data.
 func (q *getUserByIdHandler) Handle(ctx context.Context, query *GetUserByIdQuery) (*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "getUserByIdHandler.Handle")
 	defer span.Finish()
-	if product, err := q.redisCache.GetUser(ctx, query.ID.String()); err == nil && product != nil {
-		return product, nil
+	if user, err := q.redisCache.GetUser(ctx, query.ID.String()); err == nil && user != nil {
+		return user, nil
 	}
-	product, err := q.mongoDB.GetUserById(ctx, query.ID)
+	user, err := q.mongoDB.GetUserById(ctx, query.ID)
 	if err != nil {
 		return nil, err
 	}
-	q.redisCache.PutUser(ctx, product.ID, product)
-	return product, nil
+	q.redisCache.PutUser(ctx, user.ID, user)
+	return user, nil
 }
 
 // SearchUserHandler ...
