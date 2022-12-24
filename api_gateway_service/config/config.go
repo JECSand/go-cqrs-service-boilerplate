@@ -22,7 +22,7 @@ func init() {
 // Config structures the configuration for the api gateway service
 type Config struct {
 	ServiceName string          `mapstructure:"serviceName"`
-	Logger      *logging.Config `mapstructure:"logging"`
+	Logger      *logging.Config `mapstructure:"logger"`
 	KafkaTopics KafkaTopics     `mapstructure:"kafkaTopics"`
 	Http        Http            `mapstructure:"http"`
 	Grpc        Grpc            `mapstructure:"grpc"`
@@ -35,7 +35,7 @@ type Http struct {
 	Port                string   `mapstructure:"port"`
 	Development         bool     `mapstructure:"development"`
 	BasePath            string   `mapstructure:"basePath"`
-	usersPath           string   `mapstructure:"usersPath"`
+	UsersPath           string   `mapstructure:"usersPath"`
 	DebugHeaders        bool     `mapstructure:"debugHeaders"`
 	HttpClientDebug     bool     `mapstructure:"httpClientDebug"`
 	DebugErrorsResponse bool     `mapstructure:"debugErrorsResponse"`

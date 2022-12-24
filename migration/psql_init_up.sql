@@ -12,8 +12,8 @@ CREATE TABLE users
     username        VARCHAR(250)  NOT NULL CHECK ( username <> '' ),
     email           VARCHAR(250)  NOT NULL CHECK ( email <> '' ),
     password        VARCHAR(250) NOT NULL CHECK ( password <> '' ),
-    root            NUMERIC       NOT NULL,
-    active          NUMERIC       NOT NULL,
+    root            BOOLEAN       NOT NULL,
+    active          BOOLEAN       NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -24,7 +24,7 @@ CREATE TABLE groups
     name        VARCHAR(250)  NOT NULL CHECK ( name <> '' ),
     description VARCHAR(250) NOT NULL CHECK ( description <> '' ),
     creator_id  UUID NOT NULL,
-    active       NUMERIC       NOT NULL,
+    active       BOOLEAN       NOT NULL,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_id) REFERENCES users(id)
@@ -37,8 +37,8 @@ CREATE TABLE group_memberships
     description VARCHAR(250) NOT NULL CHECK ( description <> '' ),
     user_id     UUID NOT NULL,
     group_id    UUID NOT NULL,
-    status      NUMERIC       NOT NULL,
-    role        NUMERIC       NOT NULL,
+    status      BOOLEAN       NOT NULL,
+    role        BOOLEAN       NOT NULL,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
