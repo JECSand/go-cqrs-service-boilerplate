@@ -86,7 +86,7 @@ migrate_down:
 # MongoDB
 
 mongo:
-	cd ./scripts && mongo admin -u admin -p admin < init.js
+	cd ./migrations && mongo admin -u admin -p admin < initDB.js
 
 
 # ==============================================================================
