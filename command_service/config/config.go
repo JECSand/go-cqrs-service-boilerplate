@@ -21,14 +21,15 @@ func init() {
 }
 
 type Config struct {
-	ServiceName string              `mapstructure:"serviceName"`
-	Logger      *logging.Config     `mapstructure:"logger"`
-	KafkaTopics KafkaTopics         `mapstructure:"kafkaTopics"`
-	GRPC        GRPC                `mapstructure:"grpc"`
-	Postgresql  *postgres.Config    `mapstructure:"postgres"`
-	Kafka       *kafkaClient.Config `mapstructure:"kafka"`
-	Probes      probes.Config       `mapstructure:"probes"`
-	Jaeger      *tracing.Config     `mapstructure:"jaeger"`
+	ServiceName    string              `mapstructure:"serviceName"`
+	Logger         *logging.Config     `mapstructure:"logger"`
+	KafkaTopics    KafkaTopics         `mapstructure:"kafkaTopics"`
+	GRPC           GRPC                `mapstructure:"grpc"`
+	Postgresql     *postgres.Config    `mapstructure:"postgres"`
+	Kafka          *kafkaClient.Config `mapstructure:"kafka"`
+	Probes         probes.Config       `mapstructure:"probes"`
+	Jaeger         *tracing.Config     `mapstructure:"jaeger"`
+	Initialization Initialization      `mapstructure:"initialization"`
 }
 
 type GRPC struct {
@@ -43,6 +44,20 @@ type KafkaTopics struct {
 	UserUpdated kafkaClient.TopicConfig `mapstructure:"userUpdated"`
 	UserDelete  kafkaClient.TopicConfig `mapstructure:"userDelete"`
 	UserDeleted kafkaClient.TopicConfig `mapstructure:"userDeleted"`
+}
+
+type InitUser struct {
+	Email    string `mapstructure:"email"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+}
+
+type UsersInitialization struct {
+	Root InitUser `mapstructure:"root"`
+}
+
+type Initialization struct {
+	Users UsersInitialization `mapstructure:"users"`
 }
 
 func InitConfig() (*Config, error) {

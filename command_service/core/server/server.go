@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"github.com/JECSand/go-cqrs-service-boilerplate/command_service/config"
+	"github.com/JECSand/go-cqrs-service-boilerplate/command_service/core/commands"
 	"github.com/JECSand/go-cqrs-service-boilerplate/command_service/core/controllers"
 	grpc2 "github.com/JECSand/go-cqrs-service-boilerplate/command_service/core/delivery/grpc"
 	kafkaConsumer "github.com/JECSand/go-cqrs-service-boilerplate/command_service/core/delivery/kafka"
@@ -16,6 +17,7 @@ import (
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/logging"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/postgres"
 	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/tracing"
+	"github.com/JECSand/go-cqrs-service-boilerplate/pkg/utilities"
 	"github.com/go-playground/validator"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -51,15 +53,15 @@ const (
 )
 
 type server struct {
-	log       logging.Logger
-	auth      authentication.Authenticator
-	cfg       *config.Config
-	v         *validator.Validate
-	kafkaConn *kafka.Conn
-	ps        *controllers.UserService
-	im        interceptors.InterceptorManager
-	pgConn    *pgxpool.Pool
-	metrics   *metrics.CommandServiceMetrics
+	log         logging.Logger
+	auth        authentication.Authenticator
+	cfg         *config.Config
+	v           *validator.Validate
+	kafkaConn   *kafka.Conn
+	userService *controllers.UserService
+	im          interceptors.InterceptorManager
+	pgConn      *pgxpool.Pool
+	metrics     *metrics.CommandServiceMetrics
 }
 
 func NewServer(log logging.Logger, auth authentication.Authenticator, cfg *config.Config) *server {
@@ -192,6 +194,28 @@ func (s *server) runMetrics(cancel context.CancelFunc) {
 	}()
 }
 
+func (s *server) runInitializations(ctx context.Context) {
+	count, err := s.userService.Queries.CountUsers.Handle(ctx)
+	if err != nil {
+		s.log.Errorf("runInitializations: %v", err)
+	}
+	if count == 0 {
+		r := s.cfg.Initialization.Users.Root
+		id, err := utilities.NewID()
+		if err != nil {
+			s.log.WarnMsg("utilities.NewID", err)
+		}
+		command := commands.NewCreateUserCommand(id, r.Email, r.Username, r.Password, true, true)
+		if err = s.v.StructCtx(ctx, command); err != nil {
+			s.log.WarnMsg("validate", err)
+		}
+		err = s.userService.Commands.CreateUser.Handle(ctx, command)
+		if err != nil {
+			s.log.WarnMsg("CreateUser.Handle", err)
+		}
+	}
+}
+
 func (s *server) newCommandGrpcServer() (func() error, *grpc.Server, error) {
 	l, err := net.Listen("tcp", s.cfg.GRPC.Port)
 	if err != nil {
@@ -213,7 +237,7 @@ func (s *server) newCommandGrpcServer() (func() error, *grpc.Server, error) {
 		),
 		),
 	)
-	commandGrpcWriter := grpc2.NewCommandGrpcService(s.log, s.cfg, s.v, s.ps, s.metrics)
+	commandGrpcWriter := grpc2.NewCommandGrpcService(s.log, s.cfg, s.v, s.userService, s.metrics)
 	commandService.RegisterCommandServiceServer(grpcServer, commandGrpcWriter)
 	grpc_prometheus.Register(grpcServer)
 	if s.cfg.GRPC.Development {
@@ -242,8 +266,8 @@ func (s *server) Run() error {
 	defer kafkaProducer.Close() // nolint: errCheck
 
 	userRepo := repositories.NewUserRepository(s.log, s.cfg, pgxConn)
-	s.ps = controllers.NewUserService(s.log, s.cfg, userRepo, kafkaProducer)
-	userMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.ps, s.metrics)
+	s.userService = controllers.NewUserService(s.log, s.cfg, userRepo, kafkaProducer)
+	userMessageProcessor := kafkaConsumer.NewProductMessageProcessor(s.log, s.cfg, s.v, s.userService, s.metrics)
 
 	s.log.Info("Starting Writer Kafka consumers")
 	cg := kafkaClient.NewConsumerGroup(s.cfg.Kafka.Brokers, s.cfg.Kafka.GroupID, s.log)
@@ -270,6 +294,7 @@ func (s *server) Run() error {
 		defer closer.Close() // nolint: errCheck
 		opentracing.SetGlobalTracer(tracer)
 	}
+	s.runInitializations(ctx)
 	<-ctx.Done()
 	grpcServer.GracefulStop()
 	return nil

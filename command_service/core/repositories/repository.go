@@ -11,4 +11,5 @@ type Repository interface {
 	UpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
 	DeleteUserByID(ctx context.Context, id uuid.UUID) error
 	GetUserById(ctx context.Context, id uuid.UUID) (*entities.User, error)
+	CountUsers(ctx context.Context) (int, error)
 }

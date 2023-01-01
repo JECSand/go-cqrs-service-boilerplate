@@ -38,6 +38,8 @@ func (c *createUserHandler) Handle(ctx context.Context, command *CreateUserComma
 		Email:    command.CreateDto.Email,
 		Username: command.CreateDto.Username,
 		Password: command.CreateDto.Password,
+		Root:     false,
+		Active:   true,
 	}
 	dtoBytes, err := proto.Marshal(createDTO)
 	if err != nil {

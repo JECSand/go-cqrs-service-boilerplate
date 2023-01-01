@@ -26,6 +26,8 @@ const (
 	FROM users p WHERE p.id = $1`
 
 	deleteUserByIdQuery = `DELETE FROM users WHERE id = $1`
+
+	countUsersQuery = `SELECT COUNT(*) from users`
 )
 
 type userRepository struct {
@@ -34,6 +36,7 @@ type userRepository struct {
 	db  *pgxpool.Pool
 }
 
+// NewUserRepository ...
 func NewUserRepository(log logging.Logger, cfg *config.Config, db *pgxpool.Pool) *userRepository {
 	return &userRepository{
 		log: log,
@@ -42,6 +45,23 @@ func NewUserRepository(log logging.Logger, cfg *config.Config, db *pgxpool.Pool)
 	}
 }
 
+// CountUsers ...
+func (p *userRepository) CountUsers(ctx context.Context) (int, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepository.CountUsers")
+	defer span.Finish()
+	type countRes struct {
+		count int
+	}
+	var counted countRes
+	if err := p.db.QueryRow(ctx, countUsersQuery).Scan(
+		&counted.count,
+	); err != nil {
+		return 0, errors.Wrap(err, "Scan")
+	}
+	return counted.count, nil
+}
+
+// CreateUser ...
 func (p *userRepository) CreateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepository.CreateUser")
 	defer span.Finish()
@@ -61,6 +81,7 @@ func (p *userRepository) CreateUser(ctx context.Context, user *entities.User) (*
 	return &created, nil
 }
 
+// UpdateUser ...
 func (p *userRepository) UpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepository.UpdateUser")
 	defer span.Finish()
@@ -77,6 +98,7 @@ func (p *userRepository) UpdateUser(ctx context.Context, user *entities.User) (*
 	return &updated, nil
 }
 
+// GetUserById ...
 func (p *userRepository) GetUserById(ctx context.Context, uuid uuid.UUID) (*entities.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepository.GetUserById")
 	defer span.Finish()
@@ -96,6 +118,7 @@ func (p *userRepository) GetUserById(ctx context.Context, uuid uuid.UUID) (*enti
 	return &found, nil
 }
 
+// DeleteUserByID ...
 func (p *userRepository) DeleteUserByID(ctx context.Context, id uuid.UUID) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepository.DeleteUserByID")
 	defer span.Finish()

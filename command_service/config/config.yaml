@@ -60,3 +60,9 @@ jaeger:
   serviceName: command_service
   hostPort: "localhost:6831"
   logSpans: false
+initialization:
+  users:
+    root:
+      email: "root@example.com"
+      username: "root"
+      password: "abc123"

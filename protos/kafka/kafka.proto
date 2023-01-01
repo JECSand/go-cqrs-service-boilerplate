@@ -22,6 +22,8 @@ message UserCreate {
   string Email = 2;
   string Username = 3;
   string Password = 4;
+  bool   Root = 5;
+  bool   Active = 6;
 }
 
 message UserCreated {

@@ -18,20 +18,20 @@ import (
 )
 
 type grpcService struct {
-	log     logging.Logger
-	cfg     *config.Config
-	v       *validator.Validate
-	ps      *controllers.UserService
-	metrics *metrics.CommandServiceMetrics
+	log         logging.Logger
+	cfg         *config.Config
+	v           *validator.Validate
+	userService *controllers.UserService
+	metrics     *metrics.CommandServiceMetrics
 }
 
-func NewCommandGrpcService(log logging.Logger, cfg *config.Config, v *validator.Validate, ps *controllers.UserService, metrics *metrics.CommandServiceMetrics) *grpcService {
+func NewCommandGrpcService(log logging.Logger, cfg *config.Config, v *validator.Validate, us *controllers.UserService, metrics *metrics.CommandServiceMetrics) *grpcService {
 	return &grpcService{
-		log:     log,
-		cfg:     cfg,
-		v:       v,
-		ps:      ps,
-		metrics: metrics,
+		log:         log,
+		cfg:         cfg,
+		v:           v,
+		userService: us,
+		metrics:     metrics,
 	}
 }
 
@@ -50,7 +50,7 @@ func (s *grpcService) CreateUser(ctx context.Context, req *commandService.Create
 		s.log.WarnMsg("validate", err)
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
-	err = s.ps.Commands.CreateUser.Handle(ctx, command)
+	err = s.userService.Commands.CreateUser.Handle(ctx, command)
 	if err != nil {
 		s.log.WarnMsg("CreateUser.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
@@ -73,7 +73,7 @@ func (s *grpcService) UpdateUser(ctx context.Context, req *commandService.Update
 		s.log.WarnMsg("validate", err)
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
-	err = s.ps.Commands.UpdateUser.Handle(ctx, command)
+	err = s.userService.Commands.UpdateUser.Handle(ctx, command)
 	if err != nil {
 		s.log.WarnMsg("UpdateProduct.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)
@@ -96,7 +96,7 @@ func (s *grpcService) GetUserById(ctx context.Context, req *commandService.GetUs
 		s.log.WarnMsg("validate", err)
 		return nil, s.errResponse(codes.InvalidArgument, err)
 	}
-	found, err := s.ps.Queries.GetUserById.Handle(ctx, query)
+	found, err := s.userService.Queries.GetUserById.Handle(ctx, query)
 	if err != nil {
 		s.log.WarnMsg("GetUserById.Handle", err)
 		return nil, s.errResponse(codes.Internal, err)

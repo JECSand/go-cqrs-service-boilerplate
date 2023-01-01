@@ -28,6 +28,7 @@ type createUserHandler struct {
 	kafkaProducer kafkaClient.Producer
 }
 
+// NewCreateUserHandler ...
 func NewCreateUserHandler(log logging.Logger, cfg *config.Config, pgRepo repositories.Repository, kafkaProducer kafkaClient.Producer) *createUserHandler {
 	return &createUserHandler{
 		log:           log,
@@ -37,6 +38,7 @@ func NewCreateUserHandler(log logging.Logger, cfg *config.Config, pgRepo reposit
 	}
 }
 
+// Handle ...
 func (c *createUserHandler) Handle(ctx context.Context, command *CreateUserCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "createUserHandler.Handle")
 	defer span.Finish()
@@ -78,6 +80,7 @@ type updateUserHandler struct {
 	kafkaProducer kafkaClient.Producer
 }
 
+// NewUpdateUserHandler ...
 func NewUpdateUserHandler(log logging.Logger, cfg *config.Config, pgRepo repositories.Repository, kafkaProducer kafkaClient.Producer) *updateUserHandler {
 	return &updateUserHandler{log: log,
 		cfg:           cfg,
@@ -86,6 +89,7 @@ func NewUpdateUserHandler(log logging.Logger, cfg *config.Config, pgRepo reposit
 	}
 }
 
+// Handle ...
 func (c *updateUserHandler) Handle(ctx context.Context, command *UpdateUserCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "updateUserHandler.Handle")
 	defer span.Finish()
@@ -124,6 +128,7 @@ type deleteUserHandler struct {
 	kafkaProducer kafkaClient.Producer
 }
 
+// NewDeleteUserHandler ...
 func NewDeleteUserHandler(log logging.Logger, cfg *config.Config, pgRepo repositories.Repository, kafkaProducer kafkaClient.Producer) *deleteUserHandler {
 	return &deleteUserHandler{
 		log:           log,
@@ -133,6 +138,7 @@ func NewDeleteUserHandler(log logging.Logger, cfg *config.Config, pgRepo reposit
 	}
 }
 
+// Handle ...
 func (c *deleteUserHandler) Handle(ctx context.Context, command *DeleteUserCommand) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "deleteUserHandler.Handle")
 	defer span.Finish()
