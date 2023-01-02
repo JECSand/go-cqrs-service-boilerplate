@@ -18,6 +18,11 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }
 
+// GetID returns the unique identifier of the userEntity
+func (u *User) GetID() string {
+	return u.ID
+}
+
 // UsersList response with pagination
 type UsersList struct {
 	TotalCount int64   `json:"totalCount" bson:"totalCount"`

@@ -50,6 +50,9 @@ func (c *createUserHandler) Handle(ctx context.Context, command *CreateUserComma
 		Root:     command.Root,
 		Active:   command.Active,
 	}
+	if err := userDTO.HashPassword(); err != nil {
+		return err
+	}
 	user, err := c.pgRepo.CreateUser(ctx, userDTO)
 	if err != nil {
 		return err

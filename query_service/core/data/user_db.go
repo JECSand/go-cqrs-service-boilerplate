@@ -32,8 +32,15 @@ func NewMongoRepository(log logging.Logger, cfg *config.Config, db *mongo.Client
 func (p *mongoRepository) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.CreateUser")
 	defer span.Finish()
+	p.log.Info(user.ID)
+	//tID := utilities.
+	ent, err := newUserEntity(user)
+	if err != nil {
+		p.traceErr(span, err)
+		return nil, errors.Wrap(err, "newUserEntity")
+	}
 	collection := p.db.Database(p.cfg.Mongo.DB).Collection(p.cfg.MongoCollections.Users)
-	_, err := collection.InsertOne(ctx, user, &options.InsertOneOptions{})
+	_, err = collection.InsertOne(ctx, ent, &options.InsertOneOptions{})
 	if err != nil {
 		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "InsertOne")
@@ -44,12 +51,17 @@ func (p *mongoRepository) CreateUser(ctx context.Context, user *models.User) (*m
 func (p *mongoRepository) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateUser")
 	defer span.Finish()
+	ent, err := newUserEntity(user)
+	if err != nil {
+		p.traceErr(span, err)
+		return nil, errors.Wrap(err, "newUserEntity")
+	}
 	collection := p.db.Database(p.cfg.Mongo.DB).Collection(p.cfg.MongoCollections.Users)
 	ops := options.FindOneAndUpdate()
 	ops.SetReturnDocument(options.After)
 	ops.SetUpsert(true)
 	var updated models.User
-	if err := collection.FindOneAndUpdate(ctx, bson.M{"_id": user.ID}, bson.M{"$set": user}, ops).Decode(&updated); err != nil {
+	if err = collection.FindOneAndUpdate(ctx, bson.M{"_id": ent.ID}, bson.M{"$set": ent}, ops).Decode(&updated); err != nil {
 		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Decode")
 	}
@@ -60,19 +72,29 @@ func (p *mongoRepository) GetUserById(ctx context.Context, id uuid.UUID) (*model
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.GetUserById")
 	defer span.Finish()
 	collection := p.db.Database(p.cfg.Mongo.DB).Collection(p.cfg.MongoCollections.Users)
-	var user models.User
-	if err := collection.FindOne(ctx, bson.M{"_id": id.String()}).Decode(&user); err != nil {
+	var ent userEntity
+	oId, err := utilities.LoadObjectID(id)
+	if err != nil {
+		p.traceErr(span, err)
+		return nil, errors.Wrap(err, "LoadObjectIDString")
+	}
+	if err = collection.FindOne(ctx, bson.M{"_id": oId}).Decode(&ent); err != nil {
 		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Decode")
 	}
-	return &user, nil
+	return ent.toRoot(), nil
 }
 
 func (p *mongoRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.DeleteUser")
 	defer span.Finish()
+	oId, err := utilities.LoadObjectID(id)
+	if err != nil {
+		p.traceErr(span, err)
+		return errors.Wrap(err, "LoadObjectIDString")
+	}
 	collection := p.db.Database(p.cfg.Mongo.DB).Collection(p.cfg.MongoCollections.Users)
-	return collection.FindOneAndDelete(ctx, bson.M{"_id": id.String()}).Err()
+	return collection.FindOneAndDelete(ctx, bson.M{"_id": oId}).Err()
 }
 
 func (p *mongoRepository) Search(ctx context.Context, search string, pagination *utilities.Pagination) (*models.UsersList, error) {
@@ -106,12 +128,12 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 	defer cursor.Close(ctx) // nolint: errCheck
 	users := make([]*models.User, 0, pagination.GetSize())
 	for cursor.Next(ctx) {
-		var prod models.User
-		if err = cursor.Decode(&prod); err != nil {
+		var u userEntity
+		if err = cursor.Decode(&u); err != nil {
 			p.traceErr(span, err)
 			return nil, errors.Wrap(err, "Find")
 		}
-		users = append(users, &prod)
+		users = append(users, u.toRoot())
 	}
 	if err = cursor.Err(); err != nil {
 		span.SetTag("error", true)
