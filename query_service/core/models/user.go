@@ -12,8 +12,8 @@ type User struct {
 	Email     string    `json:"email,omitempty" bson:"email,omitempty" validate:"required,min=3,max=250"`
 	Username  string    `json:"username,omitempty" bson:"username,omitempty" validate:"required,min=3,max=500"`
 	Password  string    `json:"password,omitempty" bson:"password,omitempty" validate:"required"`
-	Root      bool      `json:"root,omitempty" bson:"root,omitempty" validate:"required"`
-	Active    bool      `json:"active,omitempty" bson:"active,omitempty" validate:"required"`
+	Root      bool      `json:"root,omitempty" bson:"root,omitempty"`
+	Active    bool      `json:"active,omitempty" bson:"active,omitempty"`
 	CreatedAt time.Time `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }

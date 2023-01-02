@@ -103,7 +103,7 @@ func (p *mongoRepository) Search(ctx context.Context, search string, pagination 
 		p.traceErr(span, err)
 		return nil, errors.Wrap(err, "Find")
 	}
-	defer cursor.Close(ctx) // nolint: errcheck
+	defer cursor.Close(ctx) // nolint: errCheck
 	users := make([]*models.User, 0, pagination.GetSize())
 	for cursor.Next(ctx) {
 		var prod models.User

@@ -86,7 +86,7 @@ func (s *queryMessageProcessor) processUserCreated(ctx context.Context, r *kafka
 	}
 	p := msg.GetUser()
 	// TODO: Write logic for Root and Active User fields below
-	event := events.NewCreateUserEvent(p.GetID(), p.GetEmail(), p.GetUsername(), p.GetPassword(), false, false, p.GetCreatedAt().AsTime(), p.GetUpdatedAt().AsTime())
+	event := events.NewCreateUserEvent(p.GetID(), p.GetEmail(), p.GetUsername(), p.GetPassword(), p.GetRoot(), p.GetActive(), p.GetCreatedAt().AsTime(), p.GetUpdatedAt().AsTime())
 	if err := s.v.StructCtx(ctx, event); err != nil {
 		s.log.WarnMsg("validate", err)
 		s.commitErrMessage(ctx, r, m)
