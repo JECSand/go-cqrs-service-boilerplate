@@ -11,6 +11,7 @@ type CreateUserDTO struct {
 	Email    string    `json:"email" validate:"required,gte=0,lte=255"`
 	Username string    `json:"username" validate:"required,gte=0,lte=255"`
 	Password string    `json:"password" validate:"required,gte=0,lte=5000"`
+	Active   bool      `json:"active"`
 }
 
 type CreateUserResponseDTO struct {
@@ -22,6 +23,7 @@ type UpdateUserDTO struct {
 	Email    string    `json:"email" validate:"required,gte=0,lte=255"`
 	Username string    `json:"username" validate:"required,gte=0,lte=255"`
 	Password string    `json:"password" validate:"required,gte=0,lte=5000"`
+	Active   bool      `json:"active"`
 }
 
 // UserResponse ...

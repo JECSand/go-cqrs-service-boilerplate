@@ -76,14 +76,14 @@ func (s *userMessageProcessor) processCreateUser(ctx context.Context, r *kafka.R
 		s.commitErrMessage(ctx, r, m)
 		return
 	}
+	s.log.Info("CHECK RECEIVED ID ", msg.GetID())
 	id, err := uuid.FromString(msg.GetID())
 	if err != nil {
 		s.log.WarnMsg("proto.Unmarshal", err)
 		s.commitErrMessage(ctx, r, m)
 		return
 	}
-	// TODO: Add logic to manage a new user's root and active fields
-	command := commands.NewCreateUserCommand(id, msg.GetEmail(), msg.GetUsername(), msg.GetPassword(), false, false)
+	command := commands.NewCreateUserCommand(id, msg.GetEmail(), msg.GetUsername(), msg.GetPassword(), false, msg.GetActive())
 	if err = s.v.StructCtx(ctx, command); err != nil {
 		s.log.WarnMsg("validate", err)
 		s.commitErrMessage(ctx, r, m)

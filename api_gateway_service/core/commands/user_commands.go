@@ -35,6 +35,7 @@ func (c *createUserHandler) Handle(ctx context.Context, command *CreateUserComma
 	span, ctx := opentracing.StartSpanFromContext(ctx, "createUserHandler.Handle")
 	defer span.Finish()
 	createDTO := &kafkaMessages.UserCreate{
+		ID:       command.CreateDto.ID.String(),
 		Email:    command.CreateDto.Email,
 		Username: command.CreateDto.Username,
 		Password: command.CreateDto.Password,
@@ -103,7 +104,7 @@ type deleteUserHandler struct {
 	kafkaProducer kafkaClient.Producer
 }
 
-func NewDeleteProductHandler(log logging.Logger, cfg *config.Config, kafkaProducer kafkaClient.Producer) *deleteUserHandler {
+func NewDeleteUserHandler(log logging.Logger, cfg *config.Config, kafkaProducer kafkaClient.Producer) *deleteUserHandler {
 	return &deleteUserHandler{log: log, cfg: cfg, kafkaProducer: kafkaProducer}
 }
 

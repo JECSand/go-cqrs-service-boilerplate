@@ -81,7 +81,7 @@ func (h *usersHandlers) CreateUser() echo.HandlerFunc {
 			h.traceErr(span, err)
 			return routing.ErrorCtxResponse(c, err, h.cfg.Http.DebugErrorsResponse)
 		}
-		createDto.ID, err = uuid.NewV4()
+		createDto.ID, err = utilities.NewID()
 		if err = h.v.StructCtx(ctx, createDto); err != nil {
 			h.log.WarnMsg("validate", err)
 			h.traceErr(span, err)

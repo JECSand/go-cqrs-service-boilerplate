@@ -17,7 +17,7 @@ type UserService struct {
 func NewUserService(log logging.Logger, cfg *config.Config, kafkaProducer kafkaClient.Producer, rsClient queryService.QueryServiceClient) *UserService {
 	createUserHandler := commands.NewCreateUserHandler(log, cfg, kafkaProducer)
 	updateUserHandler := commands.NewUpdateUserHandler(log, cfg, kafkaProducer)
-	deleteUserHandler := commands.NewDeleteProductHandler(log, cfg, kafkaProducer)
+	deleteUserHandler := commands.NewDeleteUserHandler(log, cfg, kafkaProducer)
 	getUserByIdHandler := queries.NewGetProductByIdHandler(log, cfg, rsClient)
 	searchUserHandler := queries.NewSearchProductHandler(log, cfg, rsClient)
 	UserCommands := commands.NewUserCommands(createUserHandler, updateUserHandler, deleteUserHandler)
