@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package queryService;
+
+option go_package = "./;queryService";
+
+
+message User {
+  string ID = 1;
+  string Email = 2;
+  string Username = 3;
+  string Password = 4;
+  bool   Root = 5;
+  bool   Active = 6;
+  google.protobuf.Timestamp CreatedAt = 7;
+  google.protobuf.Timestamp UpdatedAt = 8;
+}
+
+
+message Blacklist {
+  string ID = 1;
+  string AuthToken = 2;
+  google.protobuf.Timestamp CreatedAt = 3;
+  google.protobuf.Timestamp UpdatedAt = 4;
+}
+
+
+message AuthenticateReq {
+  string Email = 1;
+  string Password = 2;
+}
+
+message AuthenticateRes {
+  User User = 1;
+  string AccessToken = 2;
+  int64 Status = 3;
+}
+
+
+message BlacklistTokenReq {
+  string AuthToken = 1;
+}
+
+message BlacklistTokenRes {
+  Blacklist Blacklist = 1;
+}
+
+
+message CheckBlacklistReq {
+  string AuthToken = 1;
+}
+
+message CheckBlacklistRes {
+  int64 Status = 1;
+}
+
+
+message GenerateKeyReq {
+  string AccessToken = 1;
+}
+
+message GenerateKeyRes {
+  string APIKey = 1;
+}

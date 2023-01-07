@@ -18,7 +18,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }
 
-// GetID returns the unique identifier of the userEntity
+// GetID returns the unique identifier of the User
 func (u *User) GetID() string {
 	return u.ID
 }

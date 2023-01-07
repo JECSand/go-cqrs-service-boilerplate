@@ -2,11 +2,10 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-package kafkaMessages;
+package commandService;
 
-option go_package = "./;kafkaMessages";
+option go_package = "./;commandService";
 
-// USERS
 message User {
   string ID = 1;
   string Email = 2;
@@ -18,42 +17,6 @@ message User {
   google.protobuf.Timestamp UpdatedAt = 8;
 }
 
-
-message UserCreate {
-  string ID = 1;
-  string Email = 2;
-  string Username = 3;
-  string Password = 4;
-  bool   Root = 5;
-  bool   Active = 6;
-}
-
-message UserCreated {
-  User User = 1;
-}
-
-
-message UserUpdate {
-  string ID = 1;
-  string Email = 2;
-  string Username = 3;
-}
-
-message UserUpdated {
-  User User = 1;
-}
-
-
-message UserDelete {
-  string ID = 1;
-}
-
-message UserDeleted {
-  string ID = 1;
-}
-
-
-// AUTH
 message Blacklist {
   string ID = 1;
   string AuthToken = 2;
@@ -62,28 +25,37 @@ message Blacklist {
 }
 
 
-message BlacklistToken {
+message BlacklistTokenReq {
   string AuthToken = 1;
 }
 
-message BlacklistedToken {
+message BlacklistTokenRes {
   Blacklist Blacklist = 1;
 }
 
 
-message Authenticate {
+message CheckBlacklistReq {
+  string AuthToken = 1;
+}
+
+message CheckBlacklistRes {
+  int64 Status = 1;
+}
+
+
+message AuthenticateReq {
   string Email = 1;
   string Password = 2;
 }
 
-message Authenticated {
+message AuthenticateRes {
   User User = 1;
   string AccessToken = 2;
   int64 Status = 3;
 }
 
 
-message Register {
+message RegisterReq {
   string ID = 1;
   string Email = 2;
   string Username = 3;
@@ -91,38 +63,38 @@ message Register {
   bool   Active = 5;
 }
 
-message Registered {
+message RegisterRes {
   User User = 1;
   string AccessToken = 2;
   int64 Status = 3;
 }
 
 
-message Deauthenticate {
+message DeauthenticateReq {
   string AccessToken = 1;
 }
 
-message Deauthenticated {
+message DeauthenticateRes {
   int64 Status = 1;
 }
 
 
-message Reauthenticate {
+message ReauthenticateReq {
   string AccessToken = 1;
 }
 
-message Reauthenticated {
+message ReauthenticateRes {
   string AccessToken = 1;
   int64 Status = 2;
 }
 
 
-message PasswordUpdate {
+message PasswordUpdateReq {
   string ID = 1;
   string CurrentPassword = 2;
   string NewPassword = 3;
 }
 
-message PasswordUpdated {
+message PasswordUpdatedRes {
   int64 Status = 1;
 }

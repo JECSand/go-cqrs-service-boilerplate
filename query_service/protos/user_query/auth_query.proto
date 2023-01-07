@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package queryService;
+
+option go_package = "./;queryService";
+
+import "auth_query_messages.proto";
+
+
+service authQueryService {
+  rpc Authenticate(AuthenticateReq) returns (AuthenticateRes);
+  rpc BlacklistToken(BlacklistTokenReq) returns (BlacklistTokenRes);
+  rpc CheckBlacklist(CheckBlacklistReq) returns (CheckBlacklistRes);
+  rpc GenerateKey(GenerateKeyReq) returns (GenerateKeyRes);
+}

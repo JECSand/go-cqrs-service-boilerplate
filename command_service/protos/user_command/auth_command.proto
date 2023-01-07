@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package commandService;
+
+option go_package = "./;commandService";
+
+import "auth_command_messages.proto";
+
+
+service authCommandService {
+  rpc BlacklistToken(BlacklistTokenReq) returns (BlacklistTokenRes);
+  rpc CheckTokenBlacklist(CheckBlacklistReq) returns (CheckBlacklistRes);
+  rpc Register(RegisterReq) returns (RegisterRes);
+  rpc Deauthenticate(DeauthenticateReq) returns (DeauthenticateRes);
+  rpc Reauthenticate(ReauthenticateReq) returns (ReauthenticateRes);
+  rpc UpdatePassword(PasswordUpdateReq) returns (PasswordUpdateRes);
+}
